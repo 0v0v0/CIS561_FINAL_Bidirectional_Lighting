@@ -16,9 +16,11 @@ So what's the difference between this and shoot only 1 light ray and 1 camera ra
 
 This is a simple illustration of my algorithm. For each sample time in each pixel, we shoot a camera ray and randomly select a light and use Sample_Le to shoot a light ray. 
 
-And then, compute and record their bounces in the scene, until we met the bouncing limit. 
+And then, compute and record their bounces in the scene, until we met the bouncing limit. Notice that when pushing the camera ray intersections into buffer, we modify "beta" after the push. This is because in the connection, which is a fixed direction BSDF, we need to calculate f at this point, so the f term will be dependent on which light ray we will connect to, and multiply its own f here will lead to wrong results.
 
-Loop all the bouncing buffer, try connect each of them, and then multiply up all the f*dot/pdf along this part, and then multiply the Le we got from the light.
+Loop all the bouncing buffer, try connect each of them, and then multiply up all the f * dot/pdf along this part, and then multiply the Le we got from the light. 
+
+At the end, we need to divide the final L by (depth * depth), this is because in each sample, it is equal that we did depth*depth times of Naive path tracing(Although some of them may not be successful). But since in the Integrator, all Naive path tracing results are sum up and divided by sample times. So, to maintain a same illumination level, we need to do the same thing.
 
 This promises a more stable result than the book's algorithm, and we saved a lot of memory. 
 
@@ -36,3 +38,22 @@ Here're 3 images I rendered: Naive, Full Lighting, and Bidirectional.
 ![](./naive.png)
 ![](./full.png)
 ![](./bd.png)
+
+## Dealing with Transmissive Objects
+
+A common use of Bidirectional Path Tracing is to deal with those scenes where light sources are prisoned within some shells, like light shields. Here're 2 pairs of images rendered with Naive and Bidirectional: 
+
+![](./BDBall_naive.png)
+![](./BDBall_BD.png)
+
+And this is the 1K version: 
+
+![](./BDTrans1K.png)
+
+## Known Errors
+
+![](./3disk_wrong.png)
+
+Perhaps this scene is challenging: 3 square plane lights are covered by a transmissive sphere, these lights are almost pure red, pure blue and pure green. I don't know how it should look like, but I'm pretty sure this result is NOT right. 
+
+Besides, I tried to render it using Naive and Full Lighting, the results are even worse.

@@ -81,10 +81,17 @@ bool JSONReader::LoadGeometry(QJsonObject &geometry, QMap<QString, std::shared_p
 
     if(QString::compare(type, QString("Mesh")) == 0)
     {
+        qDebug() << "Find a Mesh!";
         shape = std::make_shared<Mesh>();
-        if(geometry.contains(QString("filename"))) {
+        if(geometry.contains(QString("filename")))
+        {
             QString objFilePath = geometry["filename"].toString();
             std::static_pointer_cast<Mesh>(shape)->LoadOBJ(QStringRef(&objFilePath), local_path);
+            qDebug() << "obj loaded!";
+        }
+        else
+        {
+            qDebug() << "obj not found!";
         }
     }
     else if(QString::compare(type, QString("Sphere")) == 0)

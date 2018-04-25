@@ -1,0 +1,166 @@
+{
+  "frames" :[
+    {
+    "frameNumber" : 0,
+    "scene" : {
+      "camera" : {
+        "target" : [0, 0, 0],
+        "eye" : [0, 0, -30],
+        "worldUp" : [0, 1, 0],
+        "fov" : 19.5,
+        "width" : 400,
+        "height": 400
+      },
+      "primitives" : [
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_1",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ 0, 5, 0 ],
+            "rotate": [ 90, 0, 0 ],
+            "scale": [ 10, 4, 1 ]
+          }
+        },
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_2",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ -5, 1.5, 0 ],
+            "rotate": [ 0, 90, 0 ],
+            "scale": [ 4, 8, 1 ]
+          }
+        },
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_3",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ -1, -2.5, 0 ],
+            "rotate": [ 90, 0, 0 ],
+            "scale": [ 8, 4, 1 ]
+          }
+        },
+
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_4",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ 3, -0.5, 0 ],
+            "rotate": [ 0, -90, 0 ],
+            "scale": [ 4, 4, 1 ]
+          }
+        },
+
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_mi",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ 1, 1.5, 0 ],
+            "rotate": [ 90, 0, 0 ],
+            "scale": [ 4, 4, 1 ]
+          }
+        },
+
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_mi2",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ -1, -1.5, 0 ],
+            "rotate": [ 90, 0, 0 ],
+            "scale": [ 4, 4, 1 ]
+          }
+        },
+        
+
+
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_5",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ -3, 0.5, 0 ],
+            "rotate": [ 0, 90, 0 ],
+            "scale": [ 4, 4, 1 ]
+          }
+        },
+
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_6",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ 1, 2.5, 0 ],
+            "rotate": [ 90, 0, 0 ],
+            "scale": [ 8, 4, 1 ]
+          }
+        },
+
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_7",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ 5, -1.5, 0 ],
+            "rotate": [ 0, -90, 0 ],
+            "scale": [ 4, 8, 1 ]
+          }
+        },
+
+
+        {
+          "shape": "SquarePlane",
+          "name": "Wall_8",
+          "material": "matteWhite",
+          "transform": {
+            "translate": [ 0, -5, 0 ],
+            "rotate": [ -90, 0, 0 ],
+            "scale": [ 10, 5, 1 ]
+          }
+        }
+
+      ],
+      "lights" : [
+        {
+          "shape" : "SquarePlane",
+          "name" : "Light Source",
+          "type" : "DiffuseAreaLight",
+          "lightColor" : [17,12,4],
+          "intensity" : 100,
+          "transform" : {
+            "translate" : [5 , 3.75 , 0],
+            "rotate" : [0, 90, 0],
+            "scale" : [2, 2, 1]
+          },
+          "isDelta" : false,
+          "twoSided" : true
+        }
+      ],
+      "materials" : [
+        {
+          "type" : "MatteMaterial",
+          "name" : "matteWhite",
+            "Kd" : [0.85, 0.81, 0.78],
+          "sigma": 0
+        },
+        {
+          "type" : "MatteMaterial",
+          "name" : "matteRed",
+          "Kd" : [0.63, 0.065, 0.05],
+          "sigma": 0
+        },
+        {
+          "type" : "MatteMaterial",
+          "name" : "matteGreen",
+          "Kd" : [0.14, 0.45, 0.091],
+          "sigma": 0
+        }
+      ]
+    }
+  }
+]
+}

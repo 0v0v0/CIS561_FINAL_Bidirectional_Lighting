@@ -48,7 +48,7 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
 
     if(pdfPos!=0 && pdfDir!=0)
     {
-        Le*= 1.f/(lightPdf*pdfPos*pdfDir);
+        //Le*= 1.f/(lightPdf*pdfPos*pdfDir);
     }
 
     std::vector<path_node> campath;
@@ -82,7 +82,7 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
             }
             else
             {
-                //L+= isect.Le(-camray.direction) * beta;
+                L+= isect.Le(-camray.direction) * beta;
                 sampled_light = isect.objectHit->GetAreaLight()->name;
                 break;
             }
@@ -101,28 +101,33 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
 
         Color3f f_term = isect.bsdf->Sample_f(-camray.direction, &wiW, sampler->Get2D(), &pdf,b,&a);
 
-//        if(IsBlack(f_term))
-//        {
-//            f_term = isect.bsdf->Sample_f(camray.direction, &wiW, sampler->Get2D(), &pdf,b,&a);
-//        }
+        bool specularBounce = false;
+        specularBounce = ( (a & BSDF_SPECULAR)!=0 ) || ( (a & BSDF_TRANSMISSION)!=0 );
 
-        f_term*=AbsDot(isect.normalGeometric,wiW);
-
-        if(pdf!=0)
+        if (!specularBounce)
         {
-            beta*=f_term/pdf;
+            f_term*=AbsDot(isect.normalGeometric,wiW);
+            //Store node
+            path_node cam_path_node;
+            cam_path_node.energy = beta;
+            cam_path_node.point = isect.point;
+            cam_path_node.direction = camray.direction;
+            campath.push_back(cam_path_node);
+
+            if(pdf!=0)
+            {
+                beta*=f_term/pdf;
+            }
+            else
+            {
+                break;
+            }
         }
         else
         {
-            break;
+            beta*= f_term;
         }
 
-        //Store node
-        path_node cam_path_node;
-        cam_path_node.energy = beta;
-        cam_path_node.point = isect.point;
-        cam_path_node.direction = camray.direction;
-        campath.push_back(cam_path_node);
 
         Ray next(isect.SpawnRay(wiW));
 
@@ -161,28 +166,32 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
 
         Color3f f_term = isect.bsdf->Sample_f(-lightray.direction, &wiW, sampler->Get2D(), &pdf,b,&a);
 
-//        if(IsBlack(f_term))
-//        {
-//            f_term = isect.bsdf->Sample_f(lightray.direction, &wiW, sampler->Get2D(), &pdf,b,&a);
-//        }
+        bool specularBounce = false;
+        specularBounce = ( (a & BSDF_SPECULAR)!=0 ) || ( (a & BSDF_TRANSMISSION)!=0 );
 
-        f_term*=AbsDot(isect.normalGeometric,-lightray.direction);
-
-        if(pdf!=0)
+        if (!specularBounce)
         {
-            beta*=f_term/pdf;
+            f_term*=AbsDot(isect.normalGeometric,wiW);
+            if(pdf!=0)
+            {
+                beta*=f_term/pdf;
+            }
+            else
+            {
+                break;
+            }
+
+            //Store node
+            path_node light_path_node;
+            light_path_node.energy = Le*beta;
+            light_path_node.point = isect.point;
+            light_path_node.direction = lightray.direction;
+            lightpath.push_back(light_path_node);
         }
         else
         {
-            break;
+            beta*= f_term;
         }
-
-        //Store node
-        path_node light_path_node;
-        light_path_node.energy = Le*beta;
-        light_path_node.point = isect.point;
-        light_path_node.direction = lightray.direction;
-        lightpath.push_back(light_path_node);
 
 
         Ray next(isect.SpawnRay(wiW));
@@ -203,11 +212,11 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
 
             //Visibility test
             bool visible = false;
-            glm::vec3 dir = glm::normalize(lightnode->point - camnode->point); //From Light to camera
+            glm::vec3 dir = glm::normalize(  lightnode->point - camnode->point); //From Light to camera, don't ask why...
 
             Intersection isect;
 
-            Ray ray2(lightnode->point, dir);
+            Ray ray2(lightnode->point, -dir);
             ray2.origin = lightnode->point;
             ray2.direction = -dir;
 
@@ -226,7 +235,6 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
                 }
             }
 
-
             //END of visibility test
 
             if(visible)
@@ -235,26 +243,31 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
                 {
 
                     Color3f f(0);
-                    f = isect.bsdf->f(dir,-camnode->direction);
+                    f = isect.bsdf->f(-camnode->direction,dir);
 
                     if(IsBlack(f))
                     {
-                        f = isect.bsdf->f(dir,camnode->direction);
+                        f = isect.bsdf->f(camnode->direction,dir);
                     }
 
                     float pdf = 0;
-                    pdf = isect.bsdf->Pdf(dir,-camnode->direction);
+                    pdf = isect.bsdf->Pdf(-camnode->direction,dir);
 
                     f*= AbsDot(isect.normalGeometric,dir);
 
                     if(pdf!=0)
                     {
-                        L +=  camnode->energy * lightnode->energy *f/pdf;
-                        count++;
 
-                        if(sampled_light == light->name)
+
+                        if( (light->name == sampled_light) || nLights <=1)
                         {
-                            L*=0.5f;
+                            L +=  camnode->energy * lightnode->energy*f/(2.f*pdf) ;
+                            count++;
+                        }
+                        else
+                        {
+                            L +=  camnode->energy * lightnode->energy*f/pdf ;
+                            count++;
                         }
                     }
                 }
@@ -264,9 +277,9 @@ Color3f BiDirectionalIntegrator ::Li(const Ray &ray, const Scene &scene, std::sh
         }
     }
 
-    if(count>0)
+    //if(count>0)
     {
-        L = L*0.0015f/count;
+        L = L*( 1.f / (float)(depth));
     }
 
 

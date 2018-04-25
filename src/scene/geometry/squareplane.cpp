@@ -55,12 +55,13 @@ Intersection SquarePlane::Sample(const Point2f &xi, Float *pdf) const
 
     glm::vec3 p =  glm::vec3(scale.x* x, 0, scale.y* y);
     it.point = transform.position() + p;
+    //it.point = transform.invTransT()*glm::vec3(x,y,0);
 
     //glm::vec3 p = transform.T3() * glm::vec3(x,y,0);
 
-    it.point = p;
 
-    it.normalGeometric = glm::normalize(transform.invTransT() * Normal3f(0,0,1));
+   // it.normalGeometric = glm::normalize(transform.invTransT() * Normal3f(0,0,1));
+    it.normalGeometric = Normal3f(0,0,-1);
 
     *pdf = 1 / Area();
 

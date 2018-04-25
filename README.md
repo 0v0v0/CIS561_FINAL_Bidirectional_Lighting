@@ -1,9 +1,8 @@
 # CIS561_FINAL Bidirectional Lighting
 
-![](./cornell1.png)
+![](./BD_1KHD.png)
 
-Cornell Box rendered with 100 samples per pixel and 5 bounces.
-This is the most naive version, more render results will be available later on.
+Cornell Box(light prisoned in a double sided box), rendered with 100 samples per pixel and 5 bounces.
 
 ## Algorithm
 

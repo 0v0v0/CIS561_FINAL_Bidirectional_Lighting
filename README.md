@@ -33,6 +33,6 @@ Theorically, if Naive path tracing's wasted rates(rays didn't reach the light, r
 
 Here're 3 images I rendered: Naive, Full Lighting, and Bidirectional.
 
-![](./naive (2).png)
+![](./naive.png)
 ![](./full.png)
 ![](./bd.png)

@@ -21,3 +21,18 @@ And then, compute and record their bounces in the scene, until we met the bounci
 Loop all the bouncing buffer, try connect each of them, and then multiply up all the f*dot/pdf along this part, and then multiply the Le we got from the light.
 
 This promises a more stable result than the book's algorithm, and we saved a lot of memory. 
+
+## Why Bidirectional? 
+
+The essence of (Naive)Path Tracing is in fact searching in a large space, both mathematically and physically. The only "meaningful"
+results are those rays who hit the area light. 
+
+Different from other blackbox searchings, in path tracing we know the position of the lights, which means we know where to find the results. So what's left is just how to find it. That's how Bidirectional Path Tracing works.
+
+Theorically, if Naive path tracing's wasted rates(rays didn't reach the light, return black) is N%, Bidirectional Path Tracing's wasted rate can be reduced to (N/2)%. In this way, we can use less spp(sample per pixel) to achieve the same results.
+
+Here're 3 images I rendered: Naive, Full Lighting, and Bidirectional.
+
+![](./naive (2).png)
+![](./full.png)
+![](./bd.png)
